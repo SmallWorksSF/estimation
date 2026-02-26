@@ -135,6 +135,208 @@ const fmtPrice = (item) => {
 const uid = () => Math.random().toString(36).slice(2, 9);
 const round2 = (n) => Math.round(n * 100) / 100;
 
+// ── LOGO (base64-encoded PNG) ─────────────────────────────────────────────────
+const LOGO_BASE64 = "data:image/png;base64,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";
+
+// ── PDF EXPORT ───────────────────────────────────────────────────────────────
+async function loadJsPDF() {
+  if (window.jspdf) return window.jspdf;
+  return new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
+    script.onload = () => resolve(window.jspdf);
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+}
+
+async function exportQuotePDF({ clientName, jobName, frames, jobCalcs, jobTotal, db }) {
+  const { jsPDF } = await loadJsPDF();
+  const doc = new jsPDF({ unit: "pt", format: "letter" });
+  const W = doc.internal.pageSize.getWidth();
+  const H = doc.internal.pageSize.getHeight();
+  const margin = 50;
+  const contentW = W - margin * 2;
+  let y = margin;
+
+  const colors = { text: [26, 26, 26], light: [136, 136, 136], accent: [153, 153, 153], divider: [224, 224, 224], white: [255, 255, 255] };
+
+  const checkPage = (need) => {
+    if (y + need > H - margin) { doc.addPage(); y = margin; return true; }
+    return false;
+  };
+
+  // ── Logo ──
+  try {
+    const logoSize = 70;
+    const logoX = (W - logoSize) / 2;
+    doc.addImage(LOGO_BASE64, "PNG", logoX, y, logoSize, logoSize);
+    y += logoSize + 16;
+  } catch (e) {
+    // fallback text if logo fails
+    doc.setFontSize(14);
+    doc.setTextColor(...colors.text);
+    doc.text("SMALL WORKS", W / 2, y + 20, { align: "center" });
+    y += 40;
+  }
+
+  // ── Divider ──
+  doc.setDrawColor(...colors.text);
+  doc.setLineWidth(0.5);
+  doc.line(W / 2 - 20, y, W / 2 + 20, y);
+  y += 20;
+
+  // ── Title ──
+  doc.setFontSize(20);
+  doc.setTextColor(...colors.text);
+  doc.setFont("helvetica", "normal");
+  doc.text("Frame Estimate", W / 2, y, { align: "center" });
+  y += 28;
+
+  // ── Client / Job info ──
+  doc.setFontSize(10);
+  doc.setTextColor(...colors.light);
+  const infoLine = [clientName, jobName].filter(Boolean).join("  ·  ") || "Untitled Job";
+  doc.text(infoLine, W / 2, y, { align: "center" });
+  y += 14;
+
+  // ── Date ──
+  doc.setFontSize(8);
+  doc.text(new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }), W / 2, y, { align: "center" });
+  y += 30;
+
+  // ── Horizontal rule ──
+  doc.setDrawColor(...colors.divider);
+  doc.setLineWidth(1);
+  doc.line(margin, y, W - margin, y);
+  y += 20;
+
+  // ── Frame details ──
+  frames.forEach((frame, i) => {
+    const c = jobCalcs[i];
+    checkPage(160);
+
+    // Frame header
+    doc.setFontSize(12);
+    doc.setTextColor(...colors.text);
+    doc.setFont("helvetica", "bold");
+    doc.text(`Frame ${i + 1}`, margin, y);
+    if (frame.label) {
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      doc.setTextColor(...colors.light);
+      doc.text(`— ${frame.label}`, margin + doc.getTextWidth(`Frame ${i + 1}  `), y);
+    }
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(12);
+    doc.setTextColor(...colors.text);
+    doc.text(fmt(c.subtotal), W - margin, y, { align: "right" });
+    y += 14;
+
+    // Frame specs
+    doc.setFont("courier", "normal");
+    doc.setFontSize(8);
+    doc.setTextColor(...colors.light);
+    const specParts = [`${c.frameW}" × ${c.frameH}"`, frame.moulding];
+    if (frame.finish !== "None") specParts.push(frame.finish);
+    if (frame.glazing !== "None") specParts.push(frame.glazing);
+    if (frame.backing !== "None") specParts.push(frame.backing);
+    if (frame.spacer !== "None") specParts.push(frame.spacer);
+    if (frame.strainer !== "None") specParts.push(frame.strainer);
+    if (frame.fitting !== "None") specParts.push(frame.fitting);
+    if (frame.mounting !== "None") specParts.push(frame.mounting);
+
+    // Wrap spec text
+    const specText = specParts.join("  ·  ");
+    const specLines = doc.splitTextToSize(specText, contentW);
+    doc.text(specLines, margin, y);
+    y += specLines.length * 10 + 4;
+
+    // Line items
+    const addLine = (label, value, sub) => {
+      if (!value || value === 0) return;
+      checkPage(14);
+      doc.setFont("courier", "normal");
+      doc.setFontSize(8);
+      doc.setTextColor(...colors.accent);
+      const labelText = sub ? `${label}  (${sub})` : label;
+      doc.text(labelText, margin + 8, y);
+      doc.setTextColor(...colors.text);
+      doc.setFont("courier", "bold");
+      doc.text(fmt(value), W - margin, y, { align: "right" });
+      y += 12;
+    };
+
+    addLine(`Moulding — ${frame.moulding}`, c.mouldingCost, `${c.perimeterLF.toFixed(2)} LF`);
+    addLine(`Finish — ${frame.finish}`, c.finishCost, `${c.perimeterLF.toFixed(2)} LF`);
+    addLine(`Spacer — ${frame.spacer}`, c.spacerCost, `${c.perimeterLF.toFixed(2)} LF`);
+    addLine(`Strainer — ${frame.strainer}${c.dropCleat ? " +DC" : ""}`, c.strainerCost, `${c.perimeterLF.toFixed(2)} LF`);
+    c.modifierLines.forEach((l) => addLine(l.name, l.cost, l.sub));
+    if (c.glazingNote === "QUOTE REQUIRED") {
+      checkPage(14);
+      doc.setFont("courier", "bold");
+      doc.setFontSize(8);
+      doc.setTextColor(212, 68, 68);
+      doc.text(`Glazing — ${frame.glazing}  QUOTE REQ'D`, margin + 8, y);
+      y += 12;
+    } else {
+      addLine(`Glazing — ${c.effectiveGlazing}`, c.glazingCost, `${c.areaSqIn.toFixed(0)} sq in`);
+    }
+    addLine(`Matboard — ${c.effectiveMatboard}`, c.matCost, `${c.areaSqIn.toFixed(0)} sq in`);
+    addLine(`Backing — ${frame.backing}`, c.backingCost, `${c.areaSqIn.toFixed(0)} sq in`);
+    addLine(`Fitting — ${frame.fitting}`, c.fittingCost);
+    addLine(`Mounting — ${frame.mounting}`, c.mountingCost);
+    c.addonLines.forEach((l) => addLine(l.name, l.cost));
+    if (c.rushCost > 0) addLine(`Rush Order (+${(c.rushPct * 100).toFixed(0)}%)`, c.rushCost);
+
+    // Warnings
+    if (c.warnings?.length > 0) {
+      c.warnings.forEach((w) => {
+        checkPage(14);
+        doc.setFont("courier", "normal");
+        doc.setFontSize(7);
+        doc.setTextColor(212, 68, 68);
+        doc.text(`⚠ ${w}`, margin + 8, y);
+        y += 10;
+      });
+    }
+
+    // Frame divider
+    y += 6;
+    doc.setDrawColor(...colors.divider);
+    doc.setLineWidth(0.5);
+    doc.line(margin, y, W - margin, y);
+    y += 16;
+  });
+
+  // ── Grand Total ──
+  checkPage(60);
+  doc.setDrawColor(...colors.text);
+  doc.setLineWidth(2);
+  doc.line(margin, y, W - margin, y);
+  y += 18;
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(11);
+  doc.setTextColor(...colors.text);
+  doc.text(`JOB TOTAL (${frames.length} frame${frames.length !== 1 ? "s" : ""})`, margin, y);
+  doc.setFontSize(20);
+  doc.text(fmt(jobTotal), W - margin, y, { align: "right" });
+  y += 30;
+
+  // ── Footer ──
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7);
+  doc.setTextColor(...colors.light);
+  doc.text("Small Works · San Francisco", W / 2, y, { align: "center" });
+  y += 10;
+  doc.text("Perimeter includes 10% waste for corner joins. Prices subject to change.", W / 2, y, { align: "center" });
+
+  // Save
+  const filename = [clientName, jobName].filter(Boolean).join(" - ") || "Frame Estimate";
+  doc.save(`${filename}.pdf`);
+}
+
 // ── STYLES ────────────────────────────────────────────────────────────────────
 const T = {
   mono: "'Courier Prime', monospace",
@@ -1586,6 +1788,19 @@ export default function FrameEstimator() {
               <div style={{ marginTop: 24, fontSize: 10, color: C.textFaint, textAlign: "center", lineHeight: 1.6, fontFamily: T.sans }}>
                 Small Works · San Francisco<br />
                 Perimeter includes 10% waste for corner joins. Prices subject to change.
+              </div>
+
+              {/* Export PDF Button */}
+              <div style={{ textAlign: "center", marginTop: 20 }}>
+                <button
+                  onClick={() => exportQuotePDF({ clientName, jobName, frames, jobCalcs, jobTotal, db })}
+                  style={{
+                    ...btn("primary"), fontSize: 12, padding: "10px 28px",
+                    letterSpacing: "0.1em", textTransform: "uppercase",
+                  }}
+                >
+                  ↓ Export Quote as PDF
+                </button>
               </div>
             </div>
           )}
