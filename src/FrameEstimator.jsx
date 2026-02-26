@@ -150,7 +150,7 @@ async function loadJsPDF() {
   });
 }
 
-async function exportQuotePDF({ clientName, jobName, frames, jobCalcs, jobTotal, db }) {
+async function exportQuotePDF({ clientName, jobName, frames, jobCalcs, jobTotal, db, discountPct, discountAmount, includeTax, taxAmount, grandTotal }) {
   const { jsPDF } = await loadJsPDF();
   const doc = new jsPDF({ unit: "pt", format: "letter" });
   const W = doc.internal.pageSize.getWidth();
@@ -159,21 +159,28 @@ async function exportQuotePDF({ clientName, jobName, frames, jobCalcs, jobTotal,
   const contentW = W - margin * 2;
   let y = margin;
 
-  const colors = { text: [26, 26, 26], light: [136, 136, 136], accent: [153, 153, 153], divider: [224, 224, 224], white: [255, 255, 255] };
+  const colors = { text: [26, 26, 26], light: [136, 136, 136], accent: [153, 153, 153], divider: [224, 224, 224], green: [45, 138, 78], danger: [212, 68, 68] };
 
   const checkPage = (need) => {
     if (y + need > H - margin) { doc.addPage(); y = margin; return true; }
     return false;
   };
 
-  // ── Logo ──
+  // ── Logo (load as image element for reliable rendering) ──
   try {
-    const logoSize = 70;
-    const logoX = (W - logoSize) / 2;
-    doc.addImage(LOGO_BASE64, "PNG", logoX, y, logoSize, logoSize);
-    y += logoSize + 16;
+    await new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const logoSize = 70;
+        const logoX = (W - logoSize) / 2;
+        doc.addImage(img, "PNG", logoX, y, logoSize, logoSize);
+        y += logoSize + 16;
+        resolve();
+      };
+      img.onerror = reject;
+      img.src = LOGO_BASE64;
+    });
   } catch (e) {
-    // fallback text if logo fails
     doc.setFontSize(14);
     doc.setTextColor(...colors.text);
     doc.text("SMALL WORKS", W / 2, y + 20, { align: "center" });
@@ -211,83 +218,60 @@ async function exportQuotePDF({ clientName, jobName, frames, jobCalcs, jobTotal,
   doc.line(margin, y, W - margin, y);
   y += 20;
 
-  // ── Frame details ──
+  // ── Frame details (items + quantities, NO individual prices) ──
   frames.forEach((frame, i) => {
     const c = jobCalcs[i];
-    checkPage(160);
+    checkPage(120);
 
-    // Frame header
+    // Frame header — only frame name, no price
     doc.setFontSize(12);
     doc.setTextColor(...colors.text);
     doc.setFont("helvetica", "bold");
-    doc.text(`Frame ${i + 1}`, margin, y);
-    if (frame.label) {
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(10);
-      doc.setTextColor(...colors.light);
-      doc.text(`— ${frame.label}`, margin + doc.getTextWidth(`Frame ${i + 1}  `), y);
-    }
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(12);
-    doc.setTextColor(...colors.text);
-    doc.text(fmt(c.subtotal), W - margin, y, { align: "right" });
-    y += 14;
+    let headerText = `Frame ${i + 1}`;
+    if (frame.label) headerText += ` — ${frame.label}`;
+    doc.text(headerText, margin, y);
+    y += 6;
 
-    // Frame specs
+    // Size line
     doc.setFont("courier", "normal");
-    doc.setFontSize(8);
+    doc.setFontSize(9);
     doc.setTextColor(...colors.light);
-    const specParts = [`${c.frameW}" × ${c.frameH}"`, frame.moulding];
-    if (frame.finish !== "None") specParts.push(frame.finish);
-    if (frame.glazing !== "None") specParts.push(frame.glazing);
-    if (frame.backing !== "None") specParts.push(frame.backing);
-    if (frame.spacer !== "None") specParts.push(frame.spacer);
-    if (frame.strainer !== "None") specParts.push(frame.strainer);
-    if (frame.fitting !== "None") specParts.push(frame.fitting);
-    if (frame.mounting !== "None") specParts.push(frame.mounting);
+    doc.text(`${c.frameW}" × ${c.frameH}"  ·  Perimeter: ${c.perimeterLF.toFixed(2)} LF  ·  Area: ${c.areaSqIn.toFixed(0)} sq in`, margin, y + 10);
+    y += 22;
 
-    // Wrap spec text
-    const specText = specParts.join("  ·  ");
-    const specLines = doc.splitTextToSize(specText, contentW);
-    doc.text(specLines, margin, y);
-    y += specLines.length * 10 + 4;
-
-    // Line items
-    const addLine = (label, value, sub) => {
-      if (!value || value === 0) return;
+    // List items with quantities but no prices
+    const addItem = (label, qty) => {
+      if (!label || label.includes("None")) return;
       checkPage(14);
       doc.setFont("courier", "normal");
       doc.setFontSize(8);
-      doc.setTextColor(...colors.accent);
-      const labelText = sub ? `${label}  (${sub})` : label;
-      doc.text(labelText, margin + 8, y);
       doc.setTextColor(...colors.text);
-      doc.setFont("courier", "bold");
-      doc.text(fmt(value), W - margin, y, { align: "right" });
+      doc.text(`•  ${label}`, margin + 8, y);
+      if (qty) {
+        doc.setTextColor(...colors.light);
+        doc.text(qty, W - margin, y, { align: "right" });
+      }
       y += 12;
     };
 
-    addLine(`Moulding — ${frame.moulding}`, c.mouldingCost, `${c.perimeterLF.toFixed(2)} LF`);
-    addLine(`Finish — ${frame.finish}`, c.finishCost, `${c.perimeterLF.toFixed(2)} LF`);
-    addLine(`Spacer — ${frame.spacer}`, c.spacerCost, `${c.perimeterLF.toFixed(2)} LF`);
-    addLine(`Strainer — ${frame.strainer}${c.dropCleat ? " +DC" : ""}`, c.strainerCost, `${c.perimeterLF.toFixed(2)} LF`);
-    c.modifierLines.forEach((l) => addLine(l.name, l.cost, l.sub));
-    if (c.glazingNote === "QUOTE REQUIRED") {
-      checkPage(14);
-      doc.setFont("courier", "bold");
-      doc.setFontSize(8);
-      doc.setTextColor(212, 68, 68);
-      doc.text(`Glazing — ${frame.glazing}  QUOTE REQ'D`, margin + 8, y);
-      y += 12;
-    } else {
-      addLine(`Glazing — ${c.effectiveGlazing}`, c.glazingCost, `${c.areaSqIn.toFixed(0)} sq in`);
+    addItem(`Moulding: ${frame.moulding}`, `${c.perimeterLF.toFixed(2)} LF`);
+    if (frame.finish !== "None") addItem(`Finish: ${frame.finish}`, `${c.perimeterLF.toFixed(2)} LF`);
+    if (frame.spacer !== "None") addItem(`Spacer: ${frame.spacer}`, `${c.perimeterLF.toFixed(2)} LF`);
+    if (frame.strainer !== "None") addItem(`Strainer: ${frame.strainer}${c.dropCleat ? " + Drop Cleat" : ""}`, `${c.perimeterLF.toFixed(2)} LF`);
+    c.modifierLines.forEach((l) => addItem(l.name, l.sub));
+    if (frame.glazing !== "None") {
+      if (c.glazingNote === "QUOTE REQUIRED") {
+        addItem(`Glazing: ${frame.glazing} (quote required)`, `${c.areaSqIn.toFixed(0)} sq in`);
+      } else {
+        addItem(`Glazing: ${c.effectiveGlazing}`, `${c.areaSqIn.toFixed(0)} sq in`);
+      }
     }
-    addLine(`Matboard — ${c.effectiveMatboard}`, c.matCost, `${c.areaSqIn.toFixed(0)} sq in`);
-    addLine(`Backing — ${frame.backing}`, c.backingCost, `${c.areaSqIn.toFixed(0)} sq in`);
-    addLine(`Fitting — ${frame.fitting}`, c.fittingCost);
-    addLine(`Mounting — ${frame.mounting}`, c.mountingCost);
-    c.addonLines.forEach((l) => addLine(l.name, l.cost));
-    if (c.rushCost > 0) addLine(`Rush Order (+${(c.rushPct * 100).toFixed(0)}%)`, c.rushCost);
+    if (frame.matboard !== "None") addItem(`Matboard: ${c.effectiveMatboard}`, `${c.areaSqIn.toFixed(0)} sq in`);
+    if (frame.backing !== "None") addItem(`Backing: ${frame.backing}`, `${c.areaSqIn.toFixed(0)} sq in`);
+    if (frame.fitting !== "None") addItem(`Fitting: ${frame.fitting}`);
+    if (frame.mounting !== "None") addItem(`Mounting: ${frame.mounting}`, db.mounting.find(m => m.name === frame.mounting)?.unit === "sqin" ? `${c.areaSqIn.toFixed(0)} sq in` : undefined);
+    c.addonLines.forEach((l) => addItem(l.name));
+    if (c.rushCost > 0) addItem(`Rush Order (+${(c.rushPct * 100).toFixed(0)}%)`);
 
     // Warnings
     if (c.warnings?.length > 0) {
@@ -295,7 +279,7 @@ async function exportQuotePDF({ clientName, jobName, frames, jobCalcs, jobTotal,
         checkPage(14);
         doc.setFont("courier", "normal");
         doc.setFontSize(7);
-        doc.setTextColor(212, 68, 68);
+        doc.setTextColor(...colors.danger);
         doc.text(`⚠ ${w}`, margin + 8, y);
         y += 10;
       });
@@ -309,19 +293,51 @@ async function exportQuotePDF({ clientName, jobName, frames, jobCalcs, jobTotal,
     y += 16;
   });
 
-  // ── Grand Total ──
-  checkPage(60);
+  // ── Totals section ──
+  checkPage(100);
   doc.setDrawColor(...colors.text);
   doc.setLineWidth(2);
   doc.line(margin, y, W - margin, y);
   y += 18;
 
+  // Subtotal
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(10);
+  doc.setTextColor(...colors.light);
+  doc.text(`Subtotal (${frames.length} frame${frames.length !== 1 ? "s" : ""})`, margin, y);
+  doc.setTextColor(...colors.text);
+  doc.text(fmt(jobTotal), W - margin, y, { align: "right" });
+  y += 16;
+
+  // Discount
+  if (discountPct > 0) {
+    doc.setTextColor(...colors.green);
+    doc.text(`Discount (${discountPct}%)`, margin, y);
+    doc.text(`−${fmt(discountAmount)}`, W - margin, y, { align: "right" });
+    y += 16;
+  }
+
+  // Tax
+  if (includeTax) {
+    doc.setTextColor(...colors.light);
+    doc.text("SF Sales Tax (8.75%)", margin, y);
+    doc.setTextColor(...colors.text);
+    doc.text(`+${fmt(taxAmount)}`, W - margin, y, { align: "right" });
+    y += 16;
+  }
+
+  // Grand Total
+  y += 4;
+  doc.setDrawColor(...colors.text);
+  doc.setLineWidth(1);
+  doc.line(margin, y, W - margin, y);
+  y += 16;
   doc.setFont("helvetica", "bold");
   doc.setFontSize(11);
   doc.setTextColor(...colors.text);
-  doc.text(`JOB TOTAL (${frames.length} frame${frames.length !== 1 ? "s" : ""})`, margin, y);
+  doc.text("JOB TOTAL", margin, y);
   doc.setFontSize(20);
-  doc.text(fmt(jobTotal), W - margin, y, { align: "right" });
+  doc.text(fmt(grandTotal), W - margin, y, { align: "right" });
   y += 30;
 
   // ── Footer ──
@@ -330,7 +346,7 @@ async function exportQuotePDF({ clientName, jobName, frames, jobCalcs, jobTotal,
   doc.setTextColor(...colors.light);
   doc.text("Small Works · San Francisco", W / 2, y, { align: "center" });
   y += 10;
-  doc.text("Perimeter includes 10% waste for corner joins. Prices subject to change.", W / 2, y, { align: "center" });
+  doc.text("Perimeter includes 3% waste for corner joins. Prices subject to change.", W / 2, y, { align: "center" });
 
   // Save
   const filename = [clientName, jobName].filter(Boolean).join(" - ") || "Frame Estimate";
@@ -459,7 +475,7 @@ function calculateFrame(db, frameData) {
   const shortSide = Math.min(frameW, frameH);
   const longSide = Math.max(frameW, frameH);
   const perimeterIn = 2 * (frameW + frameH);
-  const perimeterLF = (perimeterIn / 12) * 1.1;
+  const perimeterLF = (perimeterIn / 12) * 1.03;
   const areaSqIn = frameW * frameH;
   const areaSqFt = areaSqIn / 144;
 
@@ -1515,7 +1531,7 @@ function FrameEditor({ db, frame, onChange, onRemove, index, isOnly }) {
                 </div>
 
                 <div style={{ marginTop: 16, fontSize: 10, color: C.textFaint, textAlign: "center", lineHeight: 1.5, fontFamily: T.sans }}>
-                  Perimeter includes 10% waste for corner joins.<br />
+                  Perimeter includes 3% waste for corner joins.<br />
                   Prices subject to change.
                 </div>
               </div>
@@ -1538,6 +1554,9 @@ export default function FrameEstimator() {
   // Job-level info
   const [jobName, setJobName] = useState("");
   const [clientName, setClientName] = useState("");
+  const [discountPct, setDiscountPct] = useState(0);
+  const [includeTax, setIncludeTax] = useState(false);
+  const SF_TAX_RATE = 0.0875; // SF sales tax rate
 
   // Multi-frame state
   const makeDefaultFrame = useCallback(() => ({
@@ -1641,6 +1660,10 @@ export default function FrameEstimator() {
   }, [db, frames]);
 
   const jobTotal = useMemo(() => jobCalcs.reduce((sum, c) => sum + c.subtotal, 0), [jobCalcs]);
+  const discountAmount = useMemo(() => jobTotal * (discountPct / 100), [jobTotal, discountPct]);
+  const afterDiscount = useMemo(() => jobTotal - discountAmount, [jobTotal, discountAmount]);
+  const taxAmount = useMemo(() => includeTax ? afterDiscount * SF_TAX_RATE : 0, [afterDiscount, includeTax]);
+  const grandTotal = useMemo(() => afterDiscount + taxAmount, [afterDiscount, taxAmount]);
 
   if (!dbLoaded) return (
     <div style={{ minHeight: "100vh", background: C.bg, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: T.mono, color: C.textLight }}>
@@ -1774,26 +1797,63 @@ export default function FrameEstimator() {
                 })}
               </div>
 
-              {/* Grand total */}
-              <div style={{
-                borderTop: `3px solid ${C.text}`, paddingTop: 16,
-                display: "flex", justifyContent: "space-between", alignItems: "baseline",
-              }}>
-                <span style={{ fontFamily: T.sans, fontSize: 16, color: C.text, fontWeight: 600 }}>
-                  JOB TOTAL ({frames.length} frame{frames.length !== 1 ? "s" : ""})
-                </span>
-                <span style={{ fontFamily: T.sans, fontSize: 32, fontWeight: 700, color: C.text }}>{fmt(jobTotal)}</span>
+              {/* Grand total with discount & tax */}
+              <div style={{ borderTop: `3px solid ${C.text}`, paddingTop: 16 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 8 }}>
+                  <span style={{ fontFamily: T.sans, fontSize: 13, color: C.textMid }}>
+                    Subtotal ({frames.length} frame{frames.length !== 1 ? "s" : ""})
+                  </span>
+                  <span style={{ fontFamily: T.mono, fontSize: 16, color: C.text }}>{fmt(jobTotal)}</span>
+                </div>
+
+                {/* Discount */}
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <span style={{ fontFamily: T.sans, fontSize: 13, color: C.textMid }}>Discount</span>
+                    <input type="number" min="0" max="100" step="1" value={discountPct || ""}
+                      onChange={(e) => setDiscountPct(parseFloat(e.target.value) || 0)}
+                      style={{ ...baseInput, width: 56, fontSize: 12, padding: "4px 6px", textAlign: "right" }}
+                      placeholder="0" />
+                    <span style={{ fontFamily: T.mono, fontSize: 11, color: C.textLight }}>%</span>
+                  </div>
+                  {discountAmount > 0 && (
+                    <span style={{ fontFamily: T.mono, fontSize: 14, color: C.green }}>−{fmt(discountAmount)}</span>
+                  )}
+                </div>
+
+                {/* Sales Tax Toggle */}
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                  <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
+                    <input type="checkbox" checked={includeTax} onChange={() => setIncludeTax(!includeTax)}
+                      style={{ accentColor: C.accentDark, cursor: "pointer" }} />
+                    <span style={{ fontFamily: T.sans, fontSize: 13, color: C.textMid }}>SF Sales Tax (8.75%)</span>
+                  </label>
+                  {includeTax && (
+                    <span style={{ fontFamily: T.mono, fontSize: 14, color: C.text }}>+{fmt(taxAmount)}</span>
+                  )}
+                </div>
+
+                {/* Grand Total */}
+                <div style={{
+                  borderTop: `2px solid ${C.text}`, paddingTop: 12,
+                  display: "flex", justifyContent: "space-between", alignItems: "baseline",
+                }}>
+                  <span style={{ fontFamily: T.sans, fontSize: 16, color: C.text, fontWeight: 600 }}>
+                    JOB TOTAL
+                  </span>
+                  <span style={{ fontFamily: T.sans, fontSize: 32, fontWeight: 700, color: C.text }}>{fmt(grandTotal)}</span>
+                </div>
               </div>
 
               <div style={{ marginTop: 24, fontSize: 10, color: C.textFaint, textAlign: "center", lineHeight: 1.6, fontFamily: T.sans }}>
                 Small Works · San Francisco<br />
-                Perimeter includes 10% waste for corner joins. Prices subject to change.
+                Perimeter includes 3% waste for corner joins. Prices subject to change.
               </div>
 
               {/* Export PDF Button */}
               <div style={{ textAlign: "center", marginTop: 20 }}>
                 <button
-                  onClick={() => exportQuotePDF({ clientName, jobName, frames, jobCalcs, jobTotal, db })}
+                  onClick={() => exportQuotePDF({ clientName, jobName, frames, jobCalcs, jobTotal, db, discountPct, discountAmount, includeTax, taxAmount, grandTotal })}
                   style={{
                     ...btn("primary"), fontSize: 12, padding: "10px 28px",
                     letterSpacing: "0.1em", textTransform: "uppercase",
