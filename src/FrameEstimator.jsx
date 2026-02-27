@@ -140,206 +140,219 @@ const round2 = (n) => Math.round(n * 100) / 100;
 const LOGO_BASE64 = "data:image/png;base64,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";
 
 // ── PDF EXPORT ───────────────────────────────────────────────────────────────
-async function exportQuotePDF({ clientName, jobName, frames, jobCalcs, jobTotal, db, discountPct, discountAmount, includeTax, taxAmount, grandTotal }) {
-  const doc = new jsPDF({ unit: "pt", format: "letter" });
-  const W = doc.internal.pageSize.getWidth();
-  const H = doc.internal.pageSize.getHeight();
-  const margin = 50;
-  const contentW = W - margin * 2;
-  let y = margin;
+function exportQuotePDF(params) {
+  var clientName = params.clientName, jobName = params.jobName, frames = params.frames,
+      jobCalcs = params.jobCalcs, jobTotal = params.jobTotal, db = params.db,
+      discountPct = params.discountPct, discountAmount = params.discountAmount,
+      includeTax = params.includeTax, taxAmount = params.taxAmount, grandTotal = params.grandTotal,
+      thirdParty = params.thirdParty, thirdPartyTotal = params.thirdPartyTotal;
 
-  const colors = { text: [26, 26, 26], light: [136, 136, 136], accent: [153, 153, 153], divider: [224, 224, 224], green: [45, 138, 78], danger: [212, 68, 68] };
+  function buildPDF(logoImg) {
+    try {
+      var doc = new jsPDF({ unit: "pt", format: "letter" });
+      var W = doc.internal.pageSize.getWidth();
+      var H = doc.internal.pageSize.getHeight();
+      var margin = 50;
+      var y = margin;
+      var cText = [26, 26, 26], cLight = [136, 136, 136], cDiv = [224, 224, 224], cGreen = [45, 138, 78], cDanger = [212, 68, 68];
 
-  const checkPage = (need) => {
-    if (y + need > H - margin) { doc.addPage(); y = margin; return true; }
-    return false;
-  };
-
-  // ── Logo (load as image element for reliable rendering) ──
-  try {
-    await new Promise((resolve, reject) => {
-      const img = new Image();
-      img.onload = () => {
-        const logoSize = 70;
-        const logoX = (W - logoSize) / 2;
-        doc.addImage(img, "PNG", logoX, y, logoSize, logoSize);
-        y += logoSize + 16;
-        resolve();
+      var checkPage = function(need) {
+        if (y + need > H - margin) { doc.addPage(); y = margin; }
       };
-      img.onerror = reject;
-      img.src = LOGO_BASE64;
-    });
-  } catch (e) {
-    doc.setFontSize(14);
-    doc.setTextColor(...colors.text);
-    doc.text("SMALL WORKS", W / 2, y + 20, { align: "center" });
-    y += 40;
-  }
 
-  // ── Divider ──
-  doc.setDrawColor(...colors.text);
-  doc.setLineWidth(0.5);
-  doc.line(W / 2 - 20, y, W / 2 + 20, y);
-  y += 20;
-
-  // ── Title ──
-  doc.setFontSize(20);
-  doc.setTextColor(...colors.text);
-  doc.setFont("helvetica", "normal");
-  doc.text("Frame Estimate", W / 2, y, { align: "center" });
-  y += 28;
-
-  // ── Client / Job info ──
-  doc.setFontSize(10);
-  doc.setTextColor(...colors.light);
-  const infoLine = [clientName, jobName].filter(Boolean).join("  ·  ") || "Untitled Job";
-  doc.text(infoLine, W / 2, y, { align: "center" });
-  y += 14;
-
-  // ── Date ──
-  doc.setFontSize(8);
-  doc.text(new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }), W / 2, y, { align: "center" });
-  y += 30;
-
-  // ── Horizontal rule ──
-  doc.setDrawColor(...colors.divider);
-  doc.setLineWidth(1);
-  doc.line(margin, y, W - margin, y);
-  y += 20;
-
-  // ── Frame details (items + quantities, NO individual prices) ──
-  frames.forEach((frame, i) => {
-    const c = jobCalcs[i];
-    checkPage(120);
-
-    // Frame header — only frame name, no price
-    doc.setFontSize(12);
-    doc.setTextColor(...colors.text);
-    doc.setFont("helvetica", "bold");
-    let headerText = `Frame ${i + 1}`;
-    if (frame.label) headerText += ` — ${frame.label}`;
-    doc.text(headerText, margin, y);
-    y += 6;
-
-    // Size line
-    doc.setFont("courier", "normal");
-    doc.setFontSize(9);
-    doc.setTextColor(...colors.light);
-    doc.text(`${c.frameW}" × ${c.frameH}"  ·  Perimeter: ${c.perimeterLF.toFixed(2)} LF  ·  Area: ${c.areaSqIn.toFixed(0)} sq in`, margin, y + 10);
-    y += 22;
-
-    // List items with quantities but no prices
-    const addItem = (label, qty) => {
-      if (!label || label.includes("None")) return;
-      checkPage(14);
-      doc.setFont("courier", "normal");
-      doc.setFontSize(8);
-      doc.setTextColor(...colors.text);
-      doc.text(`•  ${label}`, margin + 8, y);
-      if (qty) {
-        doc.setTextColor(...colors.light);
-        doc.text(qty, W - margin, y, { align: "right" });
-      }
-      y += 12;
-    };
-
-    addItem(`Moulding: ${frame.moulding}`, `${c.perimeterLF.toFixed(2)} LF`);
-    if (frame.finish !== "None") addItem(`Finish: ${frame.finish}`, `${c.perimeterLF.toFixed(2)} LF`);
-    if (frame.spacer !== "None") addItem(`Spacer: ${frame.spacer}`, `${c.perimeterLF.toFixed(2)} LF`);
-    if (frame.strainer !== "None") addItem(`Strainer: ${frame.strainer}${c.dropCleat ? " + Drop Cleat" : ""}`, `${c.perimeterLF.toFixed(2)} LF`);
-    c.modifierLines.forEach((l) => addItem(l.name, l.sub));
-    if (frame.glazing !== "None") {
-      if (c.glazingNote === "QUOTE REQUIRED") {
-        addItem(`Glazing: ${frame.glazing} (quote required)`, `${c.areaSqIn.toFixed(0)} sq in`);
+      // Logo
+      if (logoImg) {
+        try {
+          doc.addImage(logoImg, "PNG", (W - 70) / 2, y, 70, 70);
+          y += 86;
+        } catch (e) {
+          doc.setFontSize(14); doc.setTextColor(cText[0], cText[1], cText[2]);
+          doc.text("SMALL WORKS", W / 2, y + 20, { align: "center" }); y += 40;
+        }
       } else {
-        addItem(`Glazing: ${c.effectiveGlazing}`, `${c.areaSqIn.toFixed(0)} sq in`);
+        doc.setFontSize(14); doc.setTextColor(cText[0], cText[1], cText[2]);
+        doc.text("SMALL WORKS", W / 2, y + 20, { align: "center" }); y += 40;
       }
+
+      // Divider
+      doc.setDrawColor(cText[0], cText[1], cText[2]); doc.setLineWidth(0.5);
+      doc.line(W / 2 - 20, y, W / 2 + 20, y); y += 20;
+
+      // Title
+      doc.setFontSize(20); doc.setTextColor(cText[0], cText[1], cText[2]);
+      doc.setFont("helvetica", "normal");
+      doc.text("Frame Estimate", W / 2, y, { align: "center" }); y += 28;
+
+      // Client / Job
+      doc.setFontSize(10); doc.setTextColor(cLight[0], cLight[1], cLight[2]);
+      var info = [clientName, jobName].filter(Boolean).join("  |  ") || "Untitled Job";
+      doc.text(info, W / 2, y, { align: "center" }); y += 14;
+
+      // Date
+      doc.setFontSize(8);
+      doc.text(new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }), W / 2, y, { align: "center" });
+      y += 30;
+
+      // Rule
+      doc.setDrawColor(cDiv[0], cDiv[1], cDiv[2]); doc.setLineWidth(1);
+      doc.line(margin, y, W - margin, y); y += 20;
+
+      // Frames
+      for (var i = 0; i < frames.length; i++) {
+        var frame = frames[i];
+        var c = jobCalcs[i];
+        checkPage(120);
+
+        // Header
+        doc.setFontSize(12); doc.setTextColor(cText[0], cText[1], cText[2]);
+        doc.setFont("helvetica", "bold");
+        var hdr = "Frame " + (i + 1);
+        if (frame.label) hdr += " - " + frame.label;
+        doc.text(hdr, margin, y); y += 6;
+
+        // Size
+        doc.setFont("courier", "normal"); doc.setFontSize(9);
+        doc.setTextColor(cLight[0], cLight[1], cLight[2]);
+        doc.text(c.frameW + '" x ' + c.frameH + '"  |  Perimeter: ' + c.perimeterLF.toFixed(2) + ' LF  |  Area: ' + c.areaSqIn.toFixed(0) + ' sq in', margin, y + 10);
+        y += 22;
+
+        // Items (no prices)
+        var addItem = function(label, qty) {
+          if (!label || label.indexOf("None") >= 0) return;
+          checkPage(14);
+          doc.setFont("courier", "normal"); doc.setFontSize(8);
+          doc.setTextColor(cText[0], cText[1], cText[2]);
+          doc.text("-  " + label, margin + 4, y);
+          if (qty) {
+            doc.setTextColor(cLight[0], cLight[1], cLight[2]);
+            doc.text(qty, W - margin, y, { align: "right" });
+          }
+          y += 12;
+        };
+
+        addItem("Moulding: " + frame.moulding, c.perimeterLF.toFixed(2) + " LF");
+        if (frame.finish !== "None") addItem("Finish: " + frame.finish, c.perimeterLF.toFixed(2) + " LF");
+        if (frame.spacer !== "None") addItem("Spacer: " + frame.spacer, c.perimeterLF.toFixed(2) + " LF");
+        if (frame.strainer !== "None") addItem("Strainer: " + frame.strainer + (c.dropCleat ? " + Drop Cleat" : ""), c.perimeterLF.toFixed(2) + " LF");
+        for (var mi = 0; mi < c.modifierLines.length; mi++) addItem(c.modifierLines[mi].name, c.modifierLines[mi].sub);
+        if (frame.glazing !== "None") {
+          if (c.glazingNote === "QUOTE REQUIRED") {
+            addItem("Glazing: " + frame.glazing + " (quote required)", c.areaSqIn.toFixed(0) + " sq in");
+          } else {
+            addItem("Glazing: " + c.effectiveGlazing, c.areaSqIn.toFixed(0) + " sq in");
+          }
+        }
+        if (frame.matboard !== "None") addItem("Matboard: " + c.effectiveMatboard, c.areaSqIn.toFixed(0) + " sq in");
+        if (frame.backing !== "None") addItem("Backing: " + frame.backing, c.areaSqIn.toFixed(0) + " sq in");
+        if (frame.fitting !== "None") addItem("Fitting: " + frame.fitting);
+        if (frame.mounting !== "None") {
+          var mu = null;
+          for (var j = 0; j < db.mounting.length; j++) { if (db.mounting[j].name === frame.mounting) { mu = db.mounting[j]; break; } }
+          addItem("Mounting: " + frame.mounting, mu && mu.unit === "sqin" ? c.areaSqIn.toFixed(0) + " sq in" : undefined);
+        }
+        for (var ai = 0; ai < c.addonLines.length; ai++) addItem(c.addonLines[ai].name);
+        if (c.rushCost > 0) addItem("Rush Order (+" + (c.rushPct * 100).toFixed(0) + "%)");
+
+        // Warnings
+        if (c.warnings && c.warnings.length > 0) {
+          for (var wi = 0; wi < c.warnings.length; wi++) {
+            checkPage(14);
+            doc.setFont("courier", "normal"); doc.setFontSize(7);
+            doc.setTextColor(cDanger[0], cDanger[1], cDanger[2]);
+            doc.text("! " + c.warnings[wi], margin + 8, y); y += 10;
+          }
+        }
+
+        y += 6;
+        doc.setDrawColor(cDiv[0], cDiv[1], cDiv[2]); doc.setLineWidth(0.5);
+        doc.line(margin, y, W - margin, y); y += 16;
+      }
+
+      // Totals
+      checkPage(100);
+      doc.setDrawColor(cText[0], cText[1], cText[2]); doc.setLineWidth(2);
+      doc.line(margin, y, W - margin, y); y += 18;
+
+      doc.setFont("helvetica", "normal"); doc.setFontSize(10);
+      doc.setTextColor(cLight[0], cLight[1], cLight[2]);
+      doc.text("Subtotal (" + frames.length + " frame" + (frames.length !== 1 ? "s" : "") + ")", margin, y);
+      doc.setTextColor(cText[0], cText[1], cText[2]);
+      doc.text(fmt(jobTotal), W - margin, y, { align: "right" }); y += 16;
+
+      if (discountPct > 0) {
+        doc.setTextColor(cGreen[0], cGreen[1], cGreen[2]);
+        doc.text("Discount (" + discountPct + "%)", margin, y);
+        doc.text("-" + fmt(discountAmount), W - margin, y, { align: "right" }); y += 16;
+      }
+
+      if (includeTax) {
+        doc.setTextColor(cLight[0], cLight[1], cLight[2]);
+        doc.text("SF Sales Tax (8.75%)", margin, y);
+        doc.setTextColor(cText[0], cText[1], cText[2]);
+        doc.text("+" + fmt(taxAmount), W - margin, y, { align: "right" }); y += 16;
+      }
+
+      // Third-party charges
+      if (thirdPartyTotal > 0) {
+        checkPage(80);
+        y += 4;
+        doc.setFont("helvetica", "italic"); doc.setFontSize(9);
+        doc.setTextColor(cLight[0], cLight[1], cLight[2]);
+        doc.text("Third-Party Charges", margin, y); y += 14;
+        doc.setFont("courier", "normal"); doc.setFontSize(8);
+
+        var tpItems = [
+          { label: "Mounting", val: thirdParty.mounting },
+          { label: "Window Mat", val: thirdParty.windowMat },
+          { label: "Laser Cutting", val: thirdParty.laserCutting },
+          { label: "Sew Down", val: thirdParty.sewDown },
+        ];
+        for (var ti = 0; ti < tpItems.length; ti++) {
+          if (tpItems[ti].val > 0) {
+            doc.setTextColor(cText[0], cText[1], cText[2]);
+            doc.text("  " + tpItems[ti].label, margin, y);
+            doc.text(fmt(tpItems[ti].val), W - margin, y, { align: "right" }); y += 12;
+          }
+        }
+        if (thirdParty.other > 0) {
+          doc.setTextColor(cText[0], cText[1], cText[2]);
+          var otherLbl = thirdParty.otherLabel ? "  " + thirdParty.otherLabel : "  Other";
+          doc.text(otherLbl, margin, y);
+          doc.text(fmt(thirdParty.other), W - margin, y, { align: "right" }); y += 12;
+        }
+        y += 4;
+      }
+
+      y += 4;
+      doc.setDrawColor(cText[0], cText[1], cText[2]); doc.setLineWidth(1);
+      doc.line(margin, y, W - margin, y); y += 16;
+      doc.setFont("helvetica", "bold"); doc.setFontSize(11);
+      doc.setTextColor(cText[0], cText[1], cText[2]);
+      doc.text("JOB TOTAL", margin, y);
+      doc.setFontSize(20);
+      doc.text(fmt(grandTotal), W - margin, y, { align: "right" }); y += 30;
+
+      // Footer
+      doc.setFont("helvetica", "normal"); doc.setFontSize(7);
+      doc.setTextColor(cLight[0], cLight[1], cLight[2]);
+      doc.text("Small Works | San Francisco", W / 2, y, { align: "center" }); y += 10;
+      doc.text("Perimeter includes 3% waste for corner joins. Prices subject to change.", W / 2, y, { align: "center" });
+
+      var fn = [clientName, jobName].filter(Boolean).join(" - ") || "Frame Estimate";
+      doc.save(fn + ".pdf");
+
+    } catch (err) {
+      console.error("PDF export error:", err);
+      alert("PDF export failed: " + err.message);
     }
-    if (frame.matboard !== "None") addItem(`Matboard: ${c.effectiveMatboard}`, `${c.areaSqIn.toFixed(0)} sq in`);
-    if (frame.backing !== "None") addItem(`Backing: ${frame.backing}`, `${c.areaSqIn.toFixed(0)} sq in`);
-    if (frame.fitting !== "None") addItem(`Fitting: ${frame.fitting}`);
-    if (frame.mounting !== "None") addItem(`Mounting: ${frame.mounting}`, db.mounting.find(m => m.name === frame.mounting)?.unit === "sqin" ? `${c.areaSqIn.toFixed(0)} sq in` : undefined);
-    c.addonLines.forEach((l) => addItem(l.name));
-    if (c.rushCost > 0) addItem(`Rush Order (+${(c.rushPct * 100).toFixed(0)}%)`);
-
-    // Warnings
-    if (c.warnings?.length > 0) {
-      c.warnings.forEach((w) => {
-        checkPage(14);
-        doc.setFont("courier", "normal");
-        doc.setFontSize(7);
-        doc.setTextColor(...colors.danger);
-        doc.text(`⚠ ${w}`, margin + 8, y);
-        y += 10;
-      });
-    }
-
-    // Frame divider
-    y += 6;
-    doc.setDrawColor(...colors.divider);
-    doc.setLineWidth(0.5);
-    doc.line(margin, y, W - margin, y);
-    y += 16;
-  });
-
-  // ── Totals section ──
-  checkPage(100);
-  doc.setDrawColor(...colors.text);
-  doc.setLineWidth(2);
-  doc.line(margin, y, W - margin, y);
-  y += 18;
-
-  // Subtotal
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(10);
-  doc.setTextColor(...colors.light);
-  doc.text(`Subtotal (${frames.length} frame${frames.length !== 1 ? "s" : ""})`, margin, y);
-  doc.setTextColor(...colors.text);
-  doc.text(fmt(jobTotal), W - margin, y, { align: "right" });
-  y += 16;
-
-  // Discount
-  if (discountPct > 0) {
-    doc.setTextColor(...colors.green);
-    doc.text(`Discount (${discountPct}%)`, margin, y);
-    doc.text(`−${fmt(discountAmount)}`, W - margin, y, { align: "right" });
-    y += 16;
   }
 
-  // Tax
-  if (includeTax) {
-    doc.setTextColor(...colors.light);
-    doc.text("SF Sales Tax (8.75%)", margin, y);
-    doc.setTextColor(...colors.text);
-    doc.text(`+${fmt(taxAmount)}`, W - margin, y, { align: "right" });
-    y += 16;
-  }
-
-  // Grand Total
-  y += 4;
-  doc.setDrawColor(...colors.text);
-  doc.setLineWidth(1);
-  doc.line(margin, y, W - margin, y);
-  y += 16;
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(11);
-  doc.setTextColor(...colors.text);
-  doc.text("JOB TOTAL", margin, y);
-  doc.setFontSize(20);
-  doc.text(fmt(grandTotal), W - margin, y, { align: "right" });
-  y += 30;
-
-  // ── Footer ──
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(7);
-  doc.setTextColor(...colors.light);
-  doc.text("Small Works · San Francisco", W / 2, y, { align: "center" });
-  y += 10;
-  doc.text("Perimeter includes 3% waste for corner joins. Prices subject to change.", W / 2, y, { align: "center" });
-
-  // Save
-  const filename = [clientName, jobName].filter(Boolean).join(" - ") || "Frame Estimate";
-  doc.save(`${filename}.pdf`);
+  // Load logo then build
+  var logoImg = new Image();
+  logoImg.crossOrigin = "anonymous";
+  logoImg.onload = function() { buildPDF(logoImg); };
+  logoImg.onerror = function() { buildPDF(null); };
+  logoImg.src = window.location.origin + "/logo.png";
 }
 
 // ── STYLES ────────────────────────────────────────────────────────────────────
@@ -1547,6 +1560,15 @@ export default function FrameEstimator() {
   const [includeTax, setIncludeTax] = useState(false);
   const SF_TAX_RATE = 0.0875; // SF sales tax rate
 
+  // Third-party charges (not subject to discount)
+  const DEFAULT_THIRD_PARTY = { mounting: 0, windowMat: 0, laserCutting: 0, sewDown: 0, other: 0, otherLabel: "" };
+  const [thirdParty, setThirdParty] = useState(DEFAULT_THIRD_PARTY);
+  const updateTP = (key, val) => setThirdParty(prev => ({ ...prev, [key]: val }));
+  const thirdPartyTotal = useMemo(() =>
+    (thirdParty.mounting || 0) + (thirdParty.windowMat || 0) + (thirdParty.laserCutting || 0) + (thirdParty.sewDown || 0) + (thirdParty.other || 0),
+    [thirdParty]
+  );
+
   // Multi-frame state
   const makeDefaultFrame = useCallback(() => ({
     id: uid(),
@@ -1652,7 +1674,7 @@ export default function FrameEstimator() {
   const discountAmount = useMemo(() => jobTotal * (discountPct / 100), [jobTotal, discountPct]);
   const afterDiscount = useMemo(() => jobTotal - discountAmount, [jobTotal, discountAmount]);
   const taxAmount = useMemo(() => includeTax ? afterDiscount * SF_TAX_RATE : 0, [afterDiscount, includeTax]);
-  const grandTotal = useMemo(() => afterDiscount + taxAmount, [afterDiscount, taxAmount]);
+  const grandTotal = useMemo(() => afterDiscount + taxAmount + thirdPartyTotal, [afterDiscount, taxAmount, thirdPartyTotal]);
 
   if (!dbLoaded) return (
     <div style={{ minHeight: "100vh", background: C.bg, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: T.mono, color: C.textLight }}>
@@ -1822,6 +1844,62 @@ export default function FrameEstimator() {
                   )}
                 </div>
 
+                {/* Third-Party Charges */}
+                <div style={{
+                  background: C.warm, border: `1px solid ${C.border}`, borderRadius: 4,
+                  padding: "14px 16px", marginBottom: 16, marginTop: 8,
+                }}>
+                  <div style={{
+                    fontSize: 10, letterSpacing: "0.15em", textTransform: "uppercase",
+                    color: C.accent, fontFamily: T.mono, marginBottom: 10,
+                  }}>
+                    Third-Party Charges (not subject to discount)
+                  </div>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px 16px" }}>
+                    {[
+                      { key: "mounting", label: "Mounting" },
+                      { key: "windowMat", label: "Window Mat" },
+                      { key: "laserCutting", label: "Laser Cutting" },
+                      { key: "sewDown", label: "Sew Down" },
+                    ].map(({ key, label }) => (
+                      <div key={key}>
+                        <label style={{ ...labelStyle, fontSize: 9 }}>{label}</label>
+                        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                          <span style={{ fontFamily: T.mono, fontSize: 12, color: C.textLight }}>$</span>
+                          <input type="number" min="0" step="1" value={thirdParty[key] || ""}
+                            onChange={(e) => updateTP(key, parseFloat(e.target.value) || 0)}
+                            style={{ ...baseInput, width: "100%", fontSize: 12, padding: "5px 8px" }}
+                            placeholder="0.00" />
+                        </div>
+                      </div>
+                    ))}
+                    <div style={{ gridColumn: "1 / -1" }}>
+                      <label style={{ ...labelStyle, fontSize: 9 }}>Other</label>
+                      <div style={{ display: "flex", gap: 8 }}>
+                        <input value={thirdParty.otherLabel} onChange={(e) => updateTP("otherLabel", e.target.value)}
+                          style={{ ...baseInput, flex: 1, fontSize: 12, padding: "5px 8px" }}
+                          placeholder="Description" />
+                        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                          <span style={{ fontFamily: T.mono, fontSize: 12, color: C.textLight }}>$</span>
+                          <input type="number" min="0" step="1" value={thirdParty.other || ""}
+                            onChange={(e) => updateTP("other", parseFloat(e.target.value) || 0)}
+                            style={{ ...baseInput, width: 90, fontSize: 12, padding: "5px 8px" }}
+                            placeholder="0.00" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {thirdPartyTotal > 0 && (
+                    <div style={{
+                      display: "flex", justifyContent: "space-between", alignItems: "baseline",
+                      marginTop: 10, paddingTop: 8, borderTop: `1px solid ${C.border}`,
+                    }}>
+                      <span style={{ fontFamily: T.mono, fontSize: 11, color: C.textMid }}>Third-Party Total</span>
+                      <span style={{ fontFamily: T.mono, fontSize: 14, fontWeight: 700, color: C.text }}>{fmt(thirdPartyTotal)}</span>
+                    </div>
+                  )}
+                </div>
+
                 {/* Grand Total */}
                 <div style={{
                   borderTop: `2px solid ${C.text}`, paddingTop: 12,
@@ -1842,7 +1920,7 @@ export default function FrameEstimator() {
               {/* Export PDF Button */}
               <div style={{ textAlign: "center", marginTop: 20 }}>
                 <button
-                  onClick={() => exportQuotePDF({ clientName, jobName, frames, jobCalcs, jobTotal, db, discountPct, discountAmount, includeTax, taxAmount, grandTotal })}
+                  onClick={() => exportQuotePDF({ clientName, jobName, frames, jobCalcs, jobTotal, db, discountPct, discountAmount, includeTax, taxAmount, grandTotal, thirdParty, thirdPartyTotal })}
                   style={{
                     ...btn("primary"), fontSize: 12, padding: "10px 28px",
                     letterSpacing: "0.1em", textTransform: "uppercase",
